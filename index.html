@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מפת משתתפים - מאיה משלחת לאוגנדה 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- כותרת עם לוגו מאיה -->
+        <header class="header">
+            <!-- כפתור אדמין בפינה השמאלית העליונה -->
+            <button id="admin-login-btn" class="admin-fab" title="כניסת אדמין">
+                <span class="material-symbols-outlined">admin_panel_settings</span>
+            </button>
+            
+            <div class="logo-container">
+                <div class="logo-maya">
+                    <!-- לוגו מאיה משלחת לאוגנדה -->
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <!-- רקע עגול צהוב -->
+                        <circle cx="100" cy="100" r="95" fill="#FFD700" stroke="#333" stroke-width="3"/>
+                        
+                        <!-- שמש באחורי -->
+                        <g transform="translate(100,40)">
+                            <circle cx="0" cy="0" r="25" fill="#FFA500"/>
+                            <!-- קרני שמש -->
+                            <g stroke="#FFA500" stroke-width="3">
+                                <line x1="0" y1="-35" x2="0" y2="-45"/>
+                                <line x1="25" y1="-25" x2="32" y2="-32"/>
+                                <line x1="35" y1="0" x2="45" y2="0"/>
+                                <line x1="25" y1="25" x2="32" y2="32"/>
+                                <line x1="0" y1="35" x2="0" y2="45"/>
+                                <line x1="-25" y1="25" x2="-32" y2="32"/>
+                                <line x1="-35" y1="0" x2="-45" y2="0"/>
+                                <line x1="-25" y1="-25" x2="-32" y2="-32"/>
+                            </g>
+                        </g>
+                        
+                        <!-- עץ אקציה באחורי -->
+                        <g transform="translate(160,120)">
+                            <ellipse cx="0" cy="-10" rx="20" ry="15" fill="#228B22"/>
+                            <rect x="-2" y="0" width="4" height="20" fill="#8B4513"/>
+                        </g>
+                        
+                        <!-- הציפור המרכזית (דומה לעגור או איביס) -->
+                        <g transform="translate(100,110)">
+                            <!-- גוף הציפור -->
+                            <ellipse cx="0" cy="0" rx="25" ry="15" fill="#000"/>
+                            <!-- כנפיים -->
+                            <ellipse cx="-15" cy="-5" rx="20" ry="8" fill="#000"/>
+                            <ellipse cx="15" cy="-5" rx="20" ry="8" fill="#000"/>
+                            <!-- חלקים לבנים בכנפיים -->
+                            <ellipse cx="-15" cy="-5" rx="12" ry="5" fill="#FFF"/>
+                            <ellipse cx="15" cy="-5" rx="12" ry="5" fill="#FFF"/>
+                            <!-- צוואר -->
+                            <ellipse cx="0" cy="-15" rx="8" ry="12" fill="#000"/>
+                            <!-- ראש -->
+                            <circle cx="0" cy="-25" r="8" fill="#000"/>
+                            <!-- כתר נוצות -->
+                            <g transform="translate(0,-25)">
+                                <polygon points="-3,-8 0,-15 3,-8" fill="#000"/>
+                                <polygon points="-6,-6 -3,-12 0,-6" fill="#000"/>
+                                <polygon points="0,-6 3,-12 6,-6" fill="#000"/>
+                            </g>
+                            <!-- עין -->
+                            <circle cx="-2" cy="-25" r="2" fill="#FFF"/>
+                            <circle cx="-2" cy="-25" r="1" fill="#000"/>
+                            <!-- מקור -->
+                            <polygon points="3,-25 12,-23 3,-21" fill="#FFA500"/>
+                            <!-- רגליים -->
+                            <rect x="-3" y="12" width="2" height="15" fill="#FFA500"/>
+                            <rect x="1" y="12" width="2" height="15" fill="#FFA500"/>
+                            <!-- כפות רגליים -->
+                            <g transform="translate(-2,27)">
+                                <line x1="-3" y1="0" x2="-1" y2="-3" stroke="#FFA500" stroke-width="2"/>
+                                <line x1="0" y1="0" x2="0" y2="-4" stroke="#FFA500" stroke-width="2"/>
+                                <line x1="3" y1="0" x2="1" y2="-3" stroke="#FFA500" stroke-width="2"/>
+                            </g>
+                            <g transform="translate(2,27)">
+                                <line x1="-3" y1="0" x2="-1" y2="-3" stroke="#FFA500" stroke-width="2"/>
+                                <line x1="0" y1="0" x2="0" y2="-4" stroke="#FFA500" stroke-width="2"/>
+                                <line x1="3" y1="0" x2="1" y2="-3" stroke="#FFA500" stroke-width="2"/>
+                            </g>
+                        </g>
+                        
+                        <!-- פסי דגל אוגנדה -->
+                        <rect x="20" y="155" width="160" height="5" fill="#000"/>
+                        <rect x="20" y="160" width="160" height="5" fill="#FFD700"/>
+                        <rect x="20" y="165" width="160" height="5" fill="#DC143C"/>
+                        
+                        <!-- טקסט "HelpUp" -->
+                        <text x="140" y="80" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#4A90E2">HelpUp</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="title">מאיה - משלחת לאוגנדה</div>
+            <div class="subtitle">מחברים בין חברים</div>
+        </header>
+
+        <!-- חיפוש -->
+        <div class="search-container">
+            <div class="search-box">
+                <span class="material-symbols-outlined search-icon">search</span>
+                <input type="text" class="search-input" placeholder="חיפוש משתתפים" id="search-input">
+            </div>
+        </div>
+
+        <!-- מפה -->
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="participant-count">
+                <span id="participant-count">טוען...</span>
+            </div>
+            <button id="add-user-btn" class="fab add-fab" style="display: none;" title="הוסף משתמש">
+                <span class="material-symbols-outlined">add</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal כניסת אדמין -->
+    <div id="admin-login-modal" class="modal" hidden>
+        <div class="modal-content">
+            <h3>🔐 כניסת מנהל</h3>
+            <div class="form-group">
+                <input type="password" class="form-input" placeholder="סיסמה" id="admin-password">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="admin-login">
+                    <span class="material-symbols-outlined">login</span>
+                    כניסה
+                </button>
+                <button class="btn btn-secondary" id="admin-cancel">
+                    <span class="material-symbols-outlined">close</span>
+                    ביטול
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal הוספת/עריכת משתמש -->
+    <div id="user-form-modal" class="modal" hidden>
+        <div class="modal-content">
+            <h3 id="user-form-title">➕ הוסף משתתף</h3>
+            <div class="form-group">
+                <input type="text" class="form-input" placeholder="שם מלא" id="user-name">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-input" placeholder="עיר" id="user-city">
+            </div>
+            <div class="form-group">
+                <input type="tel" class="form-input" placeholder="טלפון" id="user-phone">
+            </div>
+            <div class="form-group">
+                <input type="tel" class="form-input" placeholder="וואטסאפ (לא חובה)" id="user-whatsapp">
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" id="user-save">
+                    <span class="material-symbols-outlined">save</span>
+                    שמירה
+                </button>
+                <button class="btn btn-secondary" id="user-cancel">
+                    <span class="material-symbols-outlined">close</span>
+                    ביטול
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>
