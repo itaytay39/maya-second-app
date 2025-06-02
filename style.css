@@ -77,7 +77,6 @@ body {
 .admin-fab {
     position: absolute;
     top: 15px;
-    left: 15px;
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -97,6 +96,21 @@ body {
 .admin-fab:hover {
     background: rgba(255,255,255,0.3);
     transform: scale(1.1);
+}
+
+/* כפתור כניסה משמאל */
+#admin-login-btn {
+    left: 15px;
+}
+
+/* כפתור יציאה מימין */
+.logout-btn {
+    right: 15px;
+    background: rgba(255,0,0,0.3) !important;
+}
+
+.logout-btn:hover {
+    background: rgba(255,0,0,0.5) !important;
 }
 
 .title {
@@ -148,9 +162,39 @@ body {
     background: transparent;
 }
 
+/* כפתורי ניהול אדמין */
+.admin-controls {
+    padding: 0 1rem;
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.admin-control-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 12px;
+    background: var(--md-primary);
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.admin-control-btn:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+}
+
 /* מפה */
 .map-container {
-    height: 65vh;
+    height: 60vh;
     margin: 1rem;
     border-radius: var(--md-radius);
     overflow: hidden;
@@ -322,7 +366,7 @@ body {
     background: #cbd5e1;
 }
 
-/* עיצוב בועית Popup מעודכן */
+/* עיצוב בועית Popup */
 .leaflet-popup-content {
     margin: 12px !important;
     min-width: 300px;
@@ -375,7 +419,6 @@ body {
     gap: 0.75rem;
 }
 
-/* כפתורי בועית מעודכנים עם טקסט ואייקונים לבנים */
 .popup-btn {
     padding: 0.75rem 1rem;
     border: none;
@@ -394,7 +437,6 @@ body {
     min-height: 48px;
 }
 
-/* אייקונים לבנים */
 .popup-btn .material-symbols-outlined {
     color: white !important;
     font-size: 1.2rem;
@@ -421,6 +463,40 @@ body {
     box-shadow: var(--md-shadow-lg);
 }
 
+/* הודעות מערכת */
+.toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.toast {
+    background: var(--md-surface);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--md-shadow-lg);
+    border-left: 4px solid var(--md-success);
+    animation: slideIn 0.3s ease;
+    min-width: 250px;
+}
+
+.toast.error {
+    border-left-color: var(--md-error);
+}
+
+.toast.warning {
+    border-left-color: var(--md-warning);
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
 /* רספונסיביות */
 @media (max-width: 480px) {
     #app-container {
@@ -440,7 +516,14 @@ body {
         width: 40px;
         height: 40px;
         top: 10px;
+    }
+    
+    #admin-login-btn {
         left: 10px;
+    }
+    
+    .logout-btn {
+        right: 10px;
     }
     
     .modal-content {
@@ -451,5 +534,9 @@ body {
     .participant-count {
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
+    }
+
+    .admin-controls {
+        flex-direction: column;
     }
 }

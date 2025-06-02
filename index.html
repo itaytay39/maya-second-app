@@ -11,90 +11,124 @@
 </head>
 <body>
     <div id="app-container">
-        <!-- כותרת עם לוגו מאיה -->
         <header class="header">
             <!-- כפתור אדמין בפינה השמאלית העליונה -->
             <button id="admin-login-btn" class="admin-fab" title="כניסת אדמין">
                 <span class="material-symbols-outlined">admin_panel_settings</span>
             </button>
             
+            <!-- כפתור יציאה לאדמין -->
+            <button id="admin-logout-btn" class="admin-fab logout-btn" title="התנתק" style="display: none;">
+                <span class="material-symbols-outlined">logout</span>
+            </button>
+            
             <div class="logo-container">
                 <div class="logo-maya">
-                    <!-- לוגו מאיה משלחת לאוגנדה -->
-                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- הלוגו החדש של מאיה על בסיס התמונה שצירפת -->
+                    <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
                         <!-- רקע עגול צהוב -->
-                        <circle cx="100" cy="100" r="95" fill="#FFD700" stroke="#333" stroke-width="3"/>
+                        <circle cx="150" cy="150" r="145" fill="#FFD700" stroke="#333" stroke-width="4"/>
                         
-                        <!-- שמש באחורי -->
-                        <g transform="translate(100,40)">
-                            <circle cx="0" cy="0" r="25" fill="#FFA500"/>
+                        <!-- שמש בחלק העליון -->
+                        <g transform="translate(150,60)">
+                            <circle cx="0" cy="0" r="30" fill="#FFA500"/>
                             <!-- קרני שמש -->
-                            <g stroke="#FFA500" stroke-width="3">
-                                <line x1="0" y1="-35" x2="0" y2="-45"/>
-                                <line x1="25" y1="-25" x2="32" y2="-32"/>
-                                <line x1="35" y1="0" x2="45" y2="0"/>
-                                <line x1="25" y1="25" x2="32" y2="32"/>
-                                <line x1="0" y1="35" x2="0" y2="45"/>
-                                <line x1="-25" y1="25" x2="-32" y2="32"/>
-                                <line x1="-35" y1="0" x2="-45" y2="0"/>
-                                <line x1="-25" y1="-25" x2="-32" y2="-32"/>
+                            <g stroke="#FFA500" stroke-width="3" stroke-linecap="round">
+                                <line x1="0" y1="-40" x2="0" y2="-50"/>
+                                <line x1="28" y1="-28" x2="35" y2="-35"/>
+                                <line x1="40" y1="0" x2="50" y2="0"/>
+                                <line x1="28" y1="28" x2="35" y2="35"/>
+                                <line x1="0" y1="40" x2="0" y2="50"/>
+                                <line x1="-28" y1="28" x2="-35" y2="35"/>
+                                <line x1="-40" y1="0" x2="-50" y2="0"/>
+                                <line x1="-28" y1="-28" x2="-35" y2="-35"/>
                             </g>
                         </g>
                         
-                        <!-- עץ אקציה באחורי -->
-                        <g transform="translate(160,120)">
-                            <ellipse cx="0" cy="-10" rx="20" ry="15" fill="#228B22"/>
-                            <rect x="-2" y="0" width="4" height="20" fill="#8B4513"/>
+                        <!-- עץ אקציה בצד ימין -->
+                        <g transform="translate(230,130)">
+                            <ellipse cx="0" cy="-15" rx="25" ry="20" fill="#228B22"/>
+                            <rect x="-3" y="0" width="6" height="25" fill="#8B4513"/>
                         </g>
                         
-                        <!-- הציפור המרכזית (דומה לעגור או איביס) -->
-                        <g transform="translate(100,110)">
-                            <!-- גוף הציפור -->
-                            <ellipse cx="0" cy="0" rx="25" ry="15" fill="#000"/>
+                        <!-- העגור המוכתר (Grey Crowned Crane) - ציפור הלאומית של אוגנדה -->
+                        <g transform="translate(150,140)">
+                            <!-- גוף העגור -->
+                            <ellipse cx="0" cy="0" rx="35" ry="20" fill="#2F2F2F"/>
+                            
                             <!-- כנפיים -->
-                            <ellipse cx="-15" cy="-5" rx="20" ry="8" fill="#000"/>
-                            <ellipse cx="15" cy="-5" rx="20" ry="8" fill="#000"/>
+                            <ellipse cx="-20" cy="-8" rx="25" ry="12" fill="#000"/>
+                            <ellipse cx="20" cy="-8" rx="25" ry="12" fill="#000"/>
                             <!-- חלקים לבנים בכנפיים -->
-                            <ellipse cx="-15" cy="-5" rx="12" ry="5" fill="#FFF"/>
-                            <ellipse cx="15" cy="-5" rx="12" ry="5" fill="#FFF"/>
-                            <!-- צוואר -->
-                            <ellipse cx="0" cy="-15" rx="8" ry="12" fill="#000"/>
+                            <ellipse cx="-20" cy="-8" rx="15" ry="8" fill="#FFF"/>
+                            <ellipse cx="20" cy="-8" rx="15" ry="8" fill="#FFF"/>
+                            <!-- פסים אדומים בכנפיים -->
+                            <ellipse cx="-20" cy="-5" rx="18" ry="3" fill="#DC143C"/>
+                            <ellipse cx="20" cy="-5" rx="18" ry="3" fill="#DC143C"/>
+                            
+                            <!-- צוואר ארוך -->
+                            <ellipse cx="0" cy="-25" rx="10" ry="18" fill="#FFF"/>
+                            <ellipse cx="0" cy="-25" rx="8" ry="15" fill="#E0E0E0"/>
+                            
                             <!-- ראש -->
-                            <circle cx="0" cy="-25" r="8" fill="#000"/>
-                            <!-- כתר נוצות -->
-                            <g transform="translate(0,-25)">
-                                <polygon points="-3,-8 0,-15 3,-8" fill="#000"/>
-                                <polygon points="-6,-6 -3,-12 0,-6" fill="#000"/>
-                                <polygon points="0,-6 3,-12 6,-6" fill="#000"/>
+                            <circle cx="0" cy="-40" r="12" fill="#FFF"/>
+                            <circle cx="0" cy="-40" r="10" fill="#E8E8E8"/>
+                            
+                            <!-- הכתר הזהוב המפורסם -->
+                            <g transform="translate(0,-40)">
+                                <circle cx="0" cy="-15" r="8" fill="#FFD700"/>
+                                <!-- נוצות הכתר -->
+                                <g fill="#FFD700" stroke="#DAA520" stroke-width="1">
+                                    <polygon points="0,-23 -2,-28 2,-28"/>
+                                    <polygon points="-4,-22 -6,-27 -2,-27"/>
+                                    <polygon points="4,-22 2,-27 6,-27"/>
+                                    <polygon points="-8,-20 -10,-25 -6,-25"/>
+                                    <polygon points="8,-20 6,-25 10,-25"/>
+                                </g>
                             </g>
-                            <!-- עין -->
-                            <circle cx="-2" cy="-25" r="2" fill="#FFF"/>
-                            <circle cx="-2" cy="-25" r="1" fill="#000"/>
+                            
+                            <!-- פנים -->
+                            <ellipse cx="-2" cy="-40" rx="3" ry="4" fill="#FFD700"/>
+                            <ellipse cx="2" cy="-40" rx="3" ry="4" fill="#FFD700"/>
+                            <!-- עיניים -->
+                            <circle cx="-3" cy="-42" r="2" fill="#000"/>
+                            <circle cx="3" cy="-42" r="2" fill="#000"/>
+                            <circle cx="-3" cy="-42" r="1" fill="#FFF"/>
+                            <circle cx="3" cy="-42" r="1" fill="#FFF"/>
+                            
                             <!-- מקור -->
-                            <polygon points="3,-25 12,-23 3,-21" fill="#FFA500"/>
+                            <polygon points="0,-35 15,-33 0,-31" fill="#333"/>
+                            
                             <!-- רגליים -->
-                            <rect x="-3" y="12" width="2" height="15" fill="#FFA500"/>
-                            <rect x="1" y="12" width="2" height="15" fill="#FFA500"/>
+                            <rect x="-5" y="18" width="3" height="20" fill="#333"/>
+                            <rect x="2" y="18" width="3" height="20" fill="#333"/>
+                            
                             <!-- כפות רגליים -->
-                            <g transform="translate(-2,27)">
-                                <line x1="-3" y1="0" x2="-1" y2="-3" stroke="#FFA500" stroke-width="2"/>
-                                <line x1="0" y1="0" x2="0" y2="-4" stroke="#FFA500" stroke-width="2"/>
-                                <line x1="3" y1="0" x2="1" y2="-3" stroke="#FFA500" stroke-width="2"/>
+                            <g transform="translate(-3,38)">
+                                <line x1="-5" y1="0" x2="-2" y2="-4" stroke="#333" stroke-width="2"/>
+                                <line x1="0" y1="0" x2="0" y2="-5" stroke="#333" stroke-width="2"/>
+                                <line x1="5" y1="0" x2="2" y2="-4" stroke="#333" stroke-width="2"/>
                             </g>
-                            <g transform="translate(2,27)">
-                                <line x1="-3" y1="0" x2="-1" y2="-3" stroke="#FFA500" stroke-width="2"/>
-                                <line x1="0" y1="0" x2="0" y2="-4" stroke="#FFA500" stroke-width="2"/>
-                                <line x1="3" y1="0" x2="1" y2="-3" stroke="#FFA500" stroke-width="2"/>
+                            <g transform="translate(3,38)">
+                                <line x1="-5" y1="0" x2="-2" y2="-4" stroke="#333" stroke-width="2"/>
+                                <line x1="0" y1="0" x2="0" y2="-5" stroke="#333" stroke-width="2"/>
+                                <line x1="5" y1="0" x2="2" y2="-4" stroke="#333" stroke-width="2"/>
                             </g>
                         </g>
                         
                         <!-- פסי דגל אוגנדה -->
-                        <rect x="20" y="155" width="160" height="5" fill="#000"/>
-                        <rect x="20" y="160" width="160" height="5" fill="#FFD700"/>
-                        <rect x="20" y="165" width="160" height="5" fill="#DC143C"/>
+                        <rect x="50" y="220" width="200" height="8" fill="#000"/>
+                        <rect x="50" y="228" width="200" height="8" fill="#FFD700"/>
+                        <rect x="50" y="236" width="200" height="8" fill="#DC143C"/>
+                        <rect x="50" y="244" width="200" height="8" fill="#FFD700"/>
+                        <rect x="50" y="252" width="200" height="8" fill="#000"/>
+                        <rect x="50" y="260" width="200" height="8" fill="#DC143C"/>
                         
-                        <!-- טקסט "HelpUp" -->
-                        <text x="140" y="80" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#4A90E2">HelpUp</text>
+                        <!-- טקסט מאיה -->
+                        <text x="150" y="200" font-family="Heebo" font-size="20" font-weight="900" fill="#DC143C" text-anchor="middle">מאיה</text>
+                        
+                        <!-- HelpUp קטן -->
+                        <text x="220" y="100" font-family="Arial" font-size="10" font-weight="bold" fill="#4A90E2">HelpUp</text>
                     </svg>
                 </div>
             </div>
@@ -110,6 +144,18 @@
             </div>
         </div>
 
+        <!-- כפתורי ניהול אדמין -->
+        <div id="admin-controls" class="admin-controls" style="display: none;">
+            <button id="import-btn" class="admin-control-btn">
+                <span class="material-symbols-outlined">upload_file</span>
+                יבוא מ-Excel
+            </button>
+            <button id="export-btn" class="admin-control-btn">
+                <span class="material-symbols-outlined">download</span>
+                יצוא ל-Excel
+            </button>
+        </div>
+
         <!-- מפה -->
         <div class="map-container">
             <div id="map"></div>
@@ -121,6 +167,9 @@
             </button>
         </div>
     </div>
+
+    <!-- קלט חבוי ליבוא קבצים -->
+    <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display: none;">
 
     <!-- Modal כניסת אדמין -->
     <div id="admin-login-modal" class="modal" hidden>
@@ -171,7 +220,11 @@
         </div>
     </div>
 
+    <!-- הודעות מערכת -->
+    <div id="toast-container" class="toast-container"></div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="./script.js"></script>
 </body>
 </html>
