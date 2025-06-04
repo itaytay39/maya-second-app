@@ -1,44 +1,82 @@
 // 🚀 מערכת ניהול נתונים מתקדמת - מאיה משלחת לאוגנדה 2025
 console.log("🚀 מתחיל אתחול אפליקציית מאיה מתקדמת...");
 
+// טוען נתונים מהגיליון (CSV ציבורי)
+const sheetUrl = 'https://docs.google.com/spreadsheets/d/1zunKbBVc74mtXfXkHjMDvQSpbu9n2PSasrxQ1CsRmvg/gviz/tq?tqx=out:csv';
+
+fetch(sheetUrl)
+  .then(res => res.text())
+  .then(csvText => {
+    const rows = csvText.split('\n').map(line => line.split(','));
+    const headers = rows[0];
+    const participantsFromSheet = rows.slice(1).filter(row => row[0]).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => obj[h.trim()] = row[i] ? row[i].trim() : '');
+      return {
+        name: (obj['שם פרטי'] || '') + ' ' + (obj['שם משפחה'] || ''),
+        city: obj['עיר'] || '',
+        lat: parseFloat(obj['Lat']) || null,
+        lon: parseFloat(obj['Lon']) || null,
+        phone: '0' + (obj['מספר טלפון'] || '').replace(/^0+/, ''),
+        whatsapp: obj['מספר ווצאפ'] ? '0' + (obj['מספר ווצאפ'] || '').replace(/^0+/, '') : ''
+      };
+    });
+
+    // כאן מחליפים את הרשימה הקיימת ברשימה מהגיליון
+    participants = participantsFromSheet;
+
+    // כאן מפעילים את כל הפונקציות של האתר שלך (מפה, טבלה, חיפוש וכו')
+    if (typeof renderMarkers === 'function') renderMarkers();
+    if (typeof renderTable === 'function') renderTable();
+    if (typeof updateParticipantCount === 'function') updateParticipantCount();
+    // הוסף כאן כל פונקציה שמציירת/מרעננת נתונים באתר
+  })
+  .catch(err => {
+    alert('שגיאה בטעינת נתונים מהגיליון');
+    console.error(err);
+  });
+
+
 // נתונים בסיסיים - 35 משתמשים לדוגמה
 let participants = [
-    {name: 'נועה בר', city: 'תל אביב', lat: 32.0853, lon: 34.7818, phone: '0501111111', whatsapp: '0501111111'},
-    {name: 'דוד לוי', city: 'חיפה', lat: 32.7940, lon: 34.9896, phone: '0522222222', whatsapp: '0522222222'},
-    {name: 'רוני ישראלי', city: 'ירושלים', lat: 31.7683, lon: 35.2137, phone: '0533333333', whatsapp: '0533333333'},
-    {name: 'אור בן דוד', city: 'באר שבע', lat: 31.2518, lon: 34.7913, phone: '0544444444', whatsapp: '0544444444'},
-    {name: 'תמר שלו', city: 'אילת', lat: 29.5581, lon: 34.9482, phone: '0505555555', whatsapp: '0505555555'},
-    {name: 'יונתן כהן', city: 'נתניה', lat: 32.3215, lon: 34.8532, phone: '0506666666', whatsapp: '0506666666'},
-    {name: 'שירה מרקו', city: 'פתח תקווה', lat: 32.0879, lon: 34.8883, phone: '0507777777', whatsapp: '0507777777'},
-    {name: 'עמית רוזן', city: 'ראשון לציון', lat: 31.9730, lon: 34.7925, phone: '0508888888', whatsapp: '0508888888'},
-    {name: 'מיכל שמיר', city: 'הרצליה', lat: 32.1624, lon: 34.8441, phone: '0509999999', whatsapp: '0509999999'},
-    {name: 'אלון ברק', city: 'כפר סבא', lat: 32.1742, lon: 34.9063, phone: '0500000001', whatsapp: '0500000001'},
-    {name: 'רחל אביטל', city: 'רמת גן', lat: 32.0809, lon: 34.8199, phone: '0500000002', whatsapp: '0500000002'},
-    {name: 'גיל פרידמן', city: 'בני ברק', lat: 32.0809, lon: 34.8312, phone: '0500000003', whatsapp: '0500000003'},
-    {name: 'לילך גולן', city: 'רחובות', lat: 31.8968, lon: 34.8186, phone: '0500000004', whatsapp: '0500000004'},
-    {name: 'אסף אליהו', city: 'מודיעין', lat: 31.8970, lon: 35.0066, phone: '0500000005', whatsapp: '0500000005'},
-    {name: 'ענת לבי', city: 'קריית גת', lat: 31.6100, lon: 34.7642, phone: '0500000006', whatsapp: '0500000006'},
-    {name: 'רם צדוק', city: 'אשדוד', lat: 31.7948, lon: 34.6553, phone: '0500000007', whatsapp: '0500000007'},
-    {name: 'דנה אשכנזי', city: 'אשקלון', lat: 31.6688, lon: 34.5742, phone: '0500000008', whatsapp: '0500000008'},
-    {name: 'יעקב מזרחי', city: 'עכו', lat: 32.9253, lon: 35.0818, phone: '0500000009', whatsapp: '0500000009'},
-    {name: 'טליה גבע', city: 'נהריה', lat: 33.0073, lon: 35.0944, phone: '0500000010', whatsapp: '0500000010'},
-    {name: 'מאיר שושן', city: 'צפת', lat: 32.9650, lon: 35.4950, phone: '0500000011', whatsapp: '0500000011'},
-    {name: 'נירית אלמוג', city: 'טבריה', lat: 32.7940, lon: 35.5454, phone: '0500000012', whatsapp: '0500000012'},
-    {name: 'ישי אורן', city: 'בית שאן', lat: 32.4970, lon: 35.4990, phone: '0500000013', whatsapp: '0500000013'},
-    {name: 'שלומית דן', city: 'עפולה', lat: 32.6073, lon: 35.2889, phone: '0500000014', whatsapp: '0500000014'},
-    {name: 'רובי אבן', city: 'נצרת', lat: 32.7018, lon: 35.3034, phone: '0500000015', whatsapp: '0500000015'},
-    {name: 'יעל ברוך', city: 'דימונה', lat: 31.0686, lon: 35.0330, phone: '0500000016', whatsapp: '0500000016'},
-    {name: 'איתמר רגב', city: 'ערד', lat: 31.2587, lon: 35.2130, phone: '0500000017', whatsapp: '0500000017'},
-    {name: 'חגית נחום', city: 'מצפה רמון', lat: 30.6093, lon: 34.8017, phone: '0500000018', whatsapp: '0500000018'},
-    {name: 'אריאל כץ', city: 'קריית שמונה', lat: 33.2090, lon: 35.5695, phone: '0500000019', whatsapp: '0500000019'},
-    {name: 'מרב דוד', city: 'בית שמש', lat: 31.7530, lon: 35.0066, phone: '0500000020', whatsapp: '0500000020'},
-    {name: 'אילן מנור', city: 'לוד', lat: 31.9516, lon: 34.8882, phone: '0500000021', whatsapp: '0500000021'},
-    {name: 'קרן אטיאס', city: 'רמלה', lat: 31.9299, lon: 34.8670, phone: '0500000022', whatsapp: '0500000022'},
-    {name: 'דור ביטון', city: 'יבנה', lat: 31.8770, lon: 34.7370, phone: '0500000023', whatsapp: '0500000023'},
-    {name: 'הדס לוין', city: 'גדרה', lat: 31.8160, lon: 34.7751, phone: '0500000024', whatsapp: '0500000024'},
-    {name: 'עידו פלג', city: 'קריית מלאכי', lat: 31.7303, lon: 34.7453, phone: '0500000025', whatsapp: '0500000025'},
-    {name: 'רונית שפיר', city: 'קריית ביאליק', lat: 32.8298, lon: 35.0889, phone: '0500000026', whatsapp: '0500000026'}
+    { name: 'רני אורן', city: 'עדי', lat: 32.782353, lon: 35.173412, phone: '0522420453', whatsapp: '0522420453' },
+    { name: 'הילה אשכנזי', city: 'כפר סבא', lat: 32.178195, lon: 34.90761, phone: '0548008647', whatsapp: '0548008647' },
+    { name: 'אנה בובקו', city: 'הרצליה', lat: 32.162413, lon: 34.844675, phone: '0528085637', whatsapp: '0528085637' },
+    { name: 'בר גוטמן', city: 'פתח תקווה', lat: 32.084041, lon: 34.887762, phone: '0545867522', whatsapp: '0545867522' },
+    { name: 'שירה גולדנברג אורן', city: 'תל אביב', lat: 32.0852999, lon: 34.7817676, phone: '0544888746', whatsapp: '0544888746' },
+    { name: 'גלית גולן', city: 'עדי', lat: 32.782353, lon: 35.173412, phone: '0522420452', whatsapp: '0522420452' },
+    { name: 'נועה גלילוב', city: 'בית חשמונאי', lat: 31.890298, lon: 34.917599, phone: '0585566005', whatsapp: '0585566005' },
+    { name: 'מרים זמנאיי גלה', city: 'יבנה', lat: 31.8753534, lon: 34.7350096, phone: '0512863296', whatsapp: '0512863296' },
+    { name: 'עדן גלילוב', city: 'חיפה', lat: 32.7940463, lon: 34.989571, phone: '0526557027', whatsapp: '0526557027' },
+    { name: 'עמית גפני', city: 'נתניה', lat: 32.321458, lon: 34.853196, phone: '0556654244', whatsapp: '0556654244' },
+    { name: 'יובל דדון', city: 'קריית מוצקין', lat: 32.8390366, lon: 35.0821062, phone: '0549056171', whatsapp: '0549056171' },
+    { name: 'הילה הרלי', city: 'כפר סבא', lat: 32.178195, lon: 34.90761, phone: '0542631959', whatsapp: '0542631959' },
+    { name: 'הדר וזאני', city: 'יבנה', lat: 31.8753534, lon: 34.7350096, phone: '0508699736', whatsapp: '0508699736' },
+    { name: 'חיה זגרון', city: 'באר שבע', lat: 31.2521018, lon: 34.7867691, phone: '0522703301', whatsapp: '0522703301' },
+    { name: 'מיקה זילברברג', city: 'עשרת', lat: 31.824913, lon: 34.747459, phone: '0547689979', whatsapp: '0547689979' },
+    { name: 'דנה חזן', city: 'קיבוץ נגבה', lat: 31.662547, lon: 34.679561, phone: '0548357500', whatsapp: '0548357500' },
+    { name: 'ספיר יחזקאל', city: 'באר יעקוב', lat: 31.943507, lon: 34.83904, phone: '0549844472', whatsapp: '0549844472' },
+    { name: 'ורד יעקבי', city: 'שמשית', lat: 32.732527, lon: 35.246518, phone: '0548045636', whatsapp: '0548045636' },
+    { name: 'הדר יעקבי', city: 'שמשית', lat: 32.732527, lon: 35.246518, phone: '0548318389', whatsapp: '0548318389' },
+    { name: 'לימור יצחק', city: 'נס ציונה', lat: 31.932111, lon: 34.801327, phone: '0523405095', whatsapp: '0523405095' },
+    { name: 'נועה כהן', city: 'בנימינה', lat: 32.517078, lon: 34.955096, phone: '0532794929', whatsapp: '0532794929' },
+    { name: 'מיטל כץ', city: 'מודיעין', lat: 31.890267, lon: 35.010397, phone: '0526578078', whatsapp: '0526578078' },
+    { name: 'רן לוי', city: 'ראשלצ', lat: 31.9590813, lon: 34.8020886, phone: '0503464045', whatsapp: '0503464045' },
+    { name: 'שירה לוי', city: 'קרית ביאליק', lat: 32.8408396, lon: 35.0916456, phone: '0526122460', whatsapp: '0526122460' },
+    { name: 'ליאור לוי', city: 'קריית ביאליק', lat: 32.8408396, lon: 35.0916456, phone: '0526547604', whatsapp: '0526547604' },
+    { name: 'דורין לי לוי', city: 'ראשון לציון', lat: 31.9590813, lon: 34.8020886, phone: '0508221128', whatsapp: '0508221128' },
+    { name: 'מיה ליטמנוביץ', city: 'נטעים', lat: 31.945689, lon: 34.775145, phone: '0525554803', whatsapp: '0525554803' },
+    { name: 'יעל לנדאו', city: 'נוה צוף', lat: 32.008313, lon: 35.128876, phone: '0545070548', whatsapp: '0545070548' },
+    { name: 'עומר מנור', city: 'מושב ביצרון', lat: 31.796565, lon: 34.727378, phone: '0545552463', whatsapp: '0545552463' },
+    { name: 'יוסי עמר', city: 'חצור הגלילית', lat: 32.980382, lon: 35.543548, phone: '0506468842', whatsapp: '0506468842' },
+    { name: 'נורית פוקס', city: 'שמשית', lat: 32.732527, lon: 35.246518, phone: '0544681134', whatsapp: '0544681134' },
+    { name: 'אלה פיקל', city: 'מודיעין', lat: 31.890267, lon: 35.010397, phone: '0542565752', whatsapp: '0542565752' },
+    { name: 'אוראל פנקר', city: 'רמלה', lat: 31.931566, lon: 34.872938, phone: '0545661176', whatsapp: '0545661176' },
+    { name: 'אליה פרבר', city: 'תל אביב', lat: 32.0852999, lon: 34.7817676, phone: '0507917995', whatsapp: '0507917995' },
+    { name: 'חני פרלה', city: 'בית דגן', lat: 32.002465, lon: 34.8295485, phone: '0526897300', whatsapp: '0526897300' },
+    { name: 'אוקסנה קולסניק', city: 'יבנה', lat: 31.8753534, lon: 34.7350096, phone: '0508322332', whatsapp: '0508322332' }
 ];
+
 
 let admin = false;
 const adminPassword = "1234";
@@ -561,8 +599,11 @@ window.addEventListener('click', (e) => {
 window.addEventListener('resize', () => { map.invalidateSize(); });
 setTimeout(() => { map.invalidateSize(); }, 500);
 
-// טעינת נתונים מ-localStorage או שימוש בברירת מחדל
 console.log("🚀 מתחיל עיבוד נתונים ראשוני...");
+
+// מחיקת נתונים ישנים מה-localStorage כדי לטעון מהקוד החדש
+localStorage.removeItem('maya-participants');
+
 if (!StorageManager.load()) {
     console.log("📦 משתמש בנתונים לדוגמה");
     StorageManager.save(); // שמירה ראשונית
@@ -571,6 +612,7 @@ if (!StorageManager.load()) {
 renderMarkers();
 updateParticipantCount();
 console.log("✅ אפליקציית מאיה מוכנה לשימוש!");
+
 
 // הוספת CSS לאנימציית slideOut
 const additionalCSS = `
@@ -597,3 +639,48 @@ console.log(`
 💾 אחסון: localStorage
 🔐 הגנת אדמין: מתקדמת
 `);
+// --- טריוויה מאוגנדה ---
+
+const triviaSheetUrl = 'https://docs.google.com/spreadsheets/d/1zunKbBVc74mtXfXkHjMDvQSpbu9n2PSasrxQ1CsRmvg/gviz/tq?tqx=out:csv&sheet=טריוויה';
+
+let triviaQuestions = [];
+
+fetch(triviaSheetUrl)
+  .then(res => res.text())
+  .then(csvText => {
+    const rows = csvText.split('\n').map(line => line.split(','));
+    const headers = rows[0];
+    triviaQuestions = rows.slice(1).filter(row => row[0]).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => obj[h.trim()] = row[i] ? row[i].trim() : '');
+      return {
+        question: obj['שאלה'] || '',
+        answers: [obj['תשובה 1'], obj['תשובה 2'], obj['תשובה 3'], obj['תשובה 4']],
+        correct: parseInt(obj['תשובה נכונה'] || '1', 10) - 1
+      };
+    });
+  });
+
+document.getElementById('trivia-btn').onclick = function() {
+  if (triviaQuestions.length === 0) {
+    document.getElementById('trivia-box').innerText = 'אין שאלות זמינות כרגע.';
+    return;
+  }
+  const idx = Math.floor(Math.random() * triviaQuestions.length);
+  const q = triviaQuestions[idx];
+  let html = `<b>${q.question}</b><br>`;
+  q.answers.forEach((ans, i) => {
+    html += `<button onclick="checkTrivia(${idx},${i})">${ans}</button><br>`;
+  });
+  document.getElementById('trivia-box').innerHTML = html;
+};
+
+window.checkTrivia = function(qIdx, ansIdx) {
+  const q = triviaQuestions[qIdx];
+  if (ansIdx === q.correct) {
+    alert('נכון!');
+  } else {
+    alert('לא נכון. התשובה הנכונה: ' + q.answers[q.correct]);
+  }
+  document.getElementById('trivia-box').innerHTML = '';
+};
