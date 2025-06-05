@@ -567,10 +567,7 @@ if (!StorageManager.load()) {
     StorageManager.save(); // שמירה ראשונית
 }
 
-renderMarkers();
-updateParticipantCount();
 console.log("✅ אפליקציית מאיה מוכנה לשימוש!");
-
 
 // הוספת CSS לאנימציית slideOut
 const additionalCSS = `
