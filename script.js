@@ -3,7 +3,7 @@ console.log("🚀 מתחיל אתחול אפליקציית מאיה מתקדמת
 
 // טוען נתונים מהגיליון (CSV ציבורי)
 const sheetUrl = 'https://docs.google.com/spreadsheets/d/1zunKbBVc74mtXfXkHjMDvQSpbu9n2PSasrxQ1CsRmvg/gviz/tq?tqx=out:csv';
-
+let participants = [];
 fetch(sheetUrl)
   .then(res => res.text())
   .then(csvText => {
