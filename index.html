@@ -48,9 +48,9 @@
         .subtitle { font-size: 1rem; color: var(--md-on-surface-variant); }
 
         .map-wrapper { 
-            flex-grow: 1; /* זה התיקון הקריטי שגורם למפה למלא את השטח */
+            flex-grow: 1;
             position: relative; 
-            min-height: 0; /* מונע בעיות גלישה ב-flexbox */
+            min-height: 0;
         }
         #map { height: 100%; width: 100%; }
 
@@ -237,7 +237,9 @@
                         </div>
                     </div>`;
                     
-                L.marker([lat, lon], {icon: modernMarkerIcon}).bindPopup(popupContent).addTo(markers);
+                const marker = L.marker([lat, lon], {icon: modernMarkerIcon});
+                marker.bindPopup(popupContent);
+                markers.addLayer(marker);
             });
         }
 
@@ -270,13 +272,30 @@
                 if (e.target.tagName === 'LI') {
                     const lat = parseFloat(e.target.dataset.lat);
                     const lon = parseFloat(e.target.dataset.lon);
-                    map.setView([lat, lon], 14);
+                    const latLng = L.latLng(lat, lon);
+                    
+                    const targetMarker = markers.getLayers().find(marker => marker.getLatLng().equals(latLng));
+
+                    if (targetMarker) {
+                        markers.zoomToShowLayer(targetMarker, () => {
+                            targetMarker.openPopup();
+                        });
+                    } else {
+                        map.setView(latLng, 16);
+                    }
+                    
                     namesDropdown.hidden = true;
                 }
             });
 
             document.getElementById('reset-view-fab').onclick = () => map.setView([31.5, 34.75], 8);
             document.getElementById('refresh-data-btn').onclick = loadData;
+
+            map.on('popupopen', function(e) {
+                const px = map.project(e.popup.getLatLng());
+                px.y -= e.popup.getElement().clientHeight / 2.5; // התאמה למרכוז אנכי
+                map.panTo(map.unproject(px), {animate: true});
+            });
         });
     </script>
 </body>
