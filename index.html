@@ -178,8 +178,6 @@
                 .forEach(p => {
                     const li = document.createElement('li');
                     li.textContent = p.name;
-                    li.dataset.lat = p.lat;
-                    li.dataset.lon = p.lon;
                     listUl.appendChild(li);
                 });
         }
@@ -201,44 +199,47 @@
                 const lon = parseFloat(p.lon);
                 if (isNaN(lat) || isNaN(lon)) return;
 
-                const nearbyParticipant = allParticipants.find(other => p.phone !== other.phone && getDistance(lat, lon, parseFloat(other.lat), parseFloat(other.lon)) < 20);
-                const whatsappNum = p.whatsapp || p.phone;
-                
-                let carpoolButton = '';
-                if (nearbyParticipant && typeof whatsappNum === 'string' && whatsappNum.length > 0) {
-                    const carpoolMessage = encodeURIComponent(`היי, ראיתי שאנחנו גרים קרוב. רוצה לתאם נסיעה משותפת למשלחת של מאיה?`);
-                    carpoolButton = `<a href="https://wa.me/972${whatsappNum.replace(/^0/,'')}?text=${carpoolMessage}" class="popup-btn carpool" target="_blank"><span class="material-symbols-outlined">directions_car</span>הצע נסיעה משותפת</a>`;
-                }
-                
-                let whatsappButton = '';
-                if (typeof whatsappNum === 'string' && whatsappNum.length > 0) {
-                    const message = encodeURIComponent(`היי ${p.name}, אני מהמשלחת של מאיה.`);
-                    whatsappButton = `<a href="https://wa.me/972${whatsappNum.replace(/^0/,'')}?text=${message}" class="popup-btn whatsapp" target="_blank"><span class="material-symbols-outlined">chat</span>שלח וואטסאפ</a>`;
-                }
-                
-                let emailButton = '';
-                if (p.email && p.email.includes('@')) {
-                    emailButton = `<a href="mailto:${p.email}" class="popup-btn email" target="_blank"><span class="material-symbols-outlined">email</span>שלח מייל</a>`;
-                }
-
-                const telLink = `tel:0${p.phone}`;
-
-                const popupContent = `
-                    <div class="popup-box">
-                        <div class="popup-header">
-                            <div class="popup-name">${p.name}</div>
-                            <div class="popup-city"><span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: -3px;">location_on</span> ${p.city}</div>
-                        </div>
-                        <div class="popup-btns">
-                            ${emailButton}
-                            <a href="${telLink}" class="popup-btn phone" target="_blank"><span class="material-symbols-outlined">call</span>חייג 0${p.phone}</a>
-                            ${whatsappButton}
-                            ${carpoolButton}
-                        </div>
-                    </div>`;
-                    
                 const marker = L.marker([lat, lon], {icon: modernMarkerIcon});
-                marker.bindPopup(popupContent);
+                marker.participantData = p;
+
+                marker.bindPopup(() => {
+                    const pData = marker.participantData;
+                    const nearbyParticipant = allParticipants.find(other => pData.phone !== other.phone && getDistance(lat, lon, parseFloat(other.lat), parseFloat(other.lon)) < 20);
+                    const whatsappNum = pData.whatsapp || pData.phone;
+                    
+                    let carpoolButton = '';
+                    if (nearbyParticipant && typeof whatsappNum === 'string' && whatsappNum.length > 0) {
+                        const carpoolMessage = encodeURIComponent(`היי, ראיתי שאנחנו גרים קרוב. רוצה לתאם נסיעה משותפת למשלחת של מאיה?`);
+                        carpoolButton = `<a href="https://wa.me/972${whatsappNum.replace(/^0/,'')}?text=${carpoolMessage}" class="popup-btn carpool" target="_blank"><span class="material-symbols-outlined">directions_car</span>הצע נסיעה משותפת</a>`;
+                    }
+                    
+                    let whatsappButton = '';
+                    if (typeof whatsappNum === 'string' && whatsappNum.length > 0) {
+                        const message = encodeURIComponent(`היי ${pData.name}, אני מהמשלחת של מאיה.`);
+                        whatsappButton = `<a href="https://wa.me/972${whatsappNum.replace(/^0/,'')}?text=${message}" class="popup-btn whatsapp" target="_blank"><span class="material-symbols-outlined">chat</span>שלח וואטסאפ</a>`;
+                    }
+                    
+                    let emailButton = '';
+                    if (pData.email && pData.email.includes('@')) {
+                        emailButton = `<a href="mailto:${pData.email}" class="popup-btn email" target="_blank"><span class="material-symbols-outlined">email</span>שלח מייל</a>`;
+                    }
+
+                    const telLink = `tel:0${pData.phone}`;
+
+                    return `
+                        <div class="popup-box">
+                            <div class="popup-header">
+                                <div class="popup-name">${pData.name}</div>
+                                <div class="popup-city"><span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: -3px;">location_on</span> ${pData.city}</div>
+                            </div>
+                            <div class="popup-btns">
+                                ${emailButton}
+                                <a href="${telLink}" class="popup-btn phone" target="_blank"><span class="material-symbols-outlined">call</span>חייג 0${pData.phone}</a>
+                                ${whatsappButton}
+                                ${carpoolButton}
+                            </div>
+                        </div>`;
+                });
                 markers.addLayer(marker);
             });
         }
@@ -251,6 +252,32 @@
             const namesDropdown = document.querySelector('.names-dropdown');
             const namesList = document.getElementById('names-list');
 
+            function findAndZoomToParticipant(participantName) {
+                const participant = allParticipants.find(p => p.name === participantName);
+                if (!participant) return;
+
+                const lat = parseFloat(participant.lat);
+                const lon = parseFloat(participant.lon);
+                if (isNaN(lat) || isNaN(lon)) return;
+
+                const latLng = L.latLng(lat, lon);
+
+                let targetMarker = null;
+                markers.eachLayer(layer => {
+                    if (layer.participantData && layer.participantData.name === participantName) {
+                        targetMarker = layer;
+                    }
+                });
+
+                if (targetMarker) {
+                    markers.zoomToShowLayer(targetMarker, () => {
+                        targetMarker.openPopup();
+                    });
+                } else {
+                    map.setView(latLng, 16);
+                }
+            }
+
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase();
                 if (!query) {
@@ -262,7 +289,16 @@
             });
 
             searchInput.addEventListener('search', () => searchInput.blur());
-            searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { searchInput.blur(); } });
+            searchInput.addEventListener('keydown', (e) => { 
+                if (e.key === 'Enter') {
+                    const query = e.target.value.trim();
+                    const exactMatch = allParticipants.find(p => p.name.toLowerCase() === query.toLowerCase());
+                    if (exactMatch) {
+                        findAndZoomToParticipant(exactMatch.name);
+                    }
+                    searchInput.blur();
+                }
+            });
 
             listToggleBtn.addEventListener('click', () => {
                 namesDropdown.hidden = !namesDropdown.hidden;
@@ -270,20 +306,7 @@
 
             namesList.addEventListener('click', (e) => {
                 if (e.target.tagName === 'LI') {
-                    const lat = parseFloat(e.target.dataset.lat);
-                    const lon = parseFloat(e.target.dataset.lon);
-                    const latLng = L.latLng(lat, lon);
-                    
-                    const targetMarker = markers.getLayers().find(marker => marker.getLatLng().equals(latLng));
-
-                    if (targetMarker) {
-                        markers.zoomToShowLayer(targetMarker, () => {
-                            targetMarker.openPopup();
-                        });
-                    } else {
-                        map.setView(latLng, 16);
-                    }
-                    
+                    findAndZoomToParticipant(e.target.textContent);
                     namesDropdown.hidden = true;
                 }
             });
@@ -292,9 +315,19 @@
             document.getElementById('refresh-data-btn').onclick = loadData;
 
             map.on('popupopen', function(e) {
-                const px = map.project(e.popup.getLatLng());
-                px.y -= e.popup.getElement().clientHeight / 2.5; // התאמה למרכוז אנכי
-                map.panTo(map.unproject(px), {animate: true});
+                setTimeout(() => {
+                    const searchOverlay = document.querySelector('.search-overlay');
+                    const popupElement = e.popup.getElement();
+                    if (!searchOverlay || !popupElement) return;
+
+                    const popupRect = popupElement.getBoundingClientRect();
+                    const searchRect = searchOverlay.getBoundingClientRect();
+
+                    if (popupRect.top < searchRect.bottom) {
+                        const offset = searchRect.bottom - popupRect.top + 20;
+                        map.panBy([0, -offset], { animate: true });
+                    }
+                }, 100);
             });
         });
     </script>
