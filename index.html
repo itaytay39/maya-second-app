@@ -12,38 +12,27 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
     <style>
         :root { 
-            --md-primary-container: #dde1ff;
-            --md-on-primary-container: #00155b;
-            --md-secondary-container: #e2dffb;
-            --md-on-secondary-container: #1b1848;
-            --md-surface: #fefbff;
-            --md-surface-variant: #e3e1ec;
-            --md-surface-container-highest: #e6e0e9;
-            --md-on-surface: #1c1b1f;
-            --md-on-surface-variant: #46464f;
-            --md-outline: #777680;
-            --md-shadow-1: 0 1px 2px rgba(0,0,0,0.1);
-            --md-shadow-2: 0 2px 6px 2px rgba(0,0,0,0.1);
-            --md-radius-m: 12px;
-            --md-radius-l: 16px;
-            --md-radius-xl: 28px;
+            --md-primary-container: #dde1ff; --md-on-primary-container: #00155b; --md-secondary-container: #e2dffb; --md-on-secondary-container: #1b1848; --md-surface: #fefbff; --md-surface-variant: #e3e1ec; --md-surface-container-highest: #e6e0e9; --md-on-surface: #1c1b1f; --md-on-surface-variant: #46464f; --md-outline: #777680; --md-shadow-1: 0 1px 2px rgba(0,0,0,0.1); --md-shadow-2: 0 2px 6px 2px rgba(0,0,0,0.1); --md-radius-m: 12px; --md-radius-l: 16px; --md-radius-xl: 28px;
         }
         
+        html, body { height: 100%; margin: 0; padding: 0; }
         html { box-sizing: border-box; }
         *, *:before, *:after { box-sizing: inherit; }
 
         body { 
             font-family: 'Heebo', sans-serif; 
-            margin: 0; 
             background: #f3f3f8;
             color: var(--md-on-surface);
+            display: flex;
+            justify-content: center;
         }
 
         #app-container { 
+            width: 100%;
             max-width: 480px; 
-            margin: 0 auto; 
             background: var(--md-surface); 
-            min-height: 100vh; 
+            display: flex;
+            flex-direction: column;
         }
 
         .header { 
@@ -51,72 +40,61 @@
             padding: 1.5rem 1rem 1rem 1rem; 
             text-align: center; 
             border-bottom: 1px solid var(--md-surface-variant);
+            flex-shrink: 0;
         }
-
-        .logo-maya { 
-            width: 100px; height: 100px; border-radius: 50%; 
-            margin: 0 auto 1rem; background: white; padding: 5px; 
-            box-shadow: var(--md-shadow-1);
-        }
+        .logo-maya { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 1rem; background: white; padding: 5px; box-shadow: var(--md-shadow-1); }
         .logo-maya img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
-
         .title { font-size: 1.5rem; font-weight: 700; }
         .subtitle { font-size: 1rem; color: var(--md-on-surface-variant); }
 
-        .search-container { padding: 1rem; background: var(--md-surface); }
-        .search-box { 
-            display: flex; align-items: center; background: var(--md-surface-container-highest);
-            border-radius: 28px; padding: 0.75rem 1.25rem; 
-            border: 1px solid transparent; 
+        .map-wrapper { 
+            flex-grow: 1; /* זה התיקון הקריטי שגורם למפה למלא את השטח */
+            position: relative; 
+            min-height: 0; /* מונע בעיות גלישה ב-flexbox */
         }
-        .search-box:focus-within { background: var(--md-surface); border-color: var(--md-primary-container); }
-        .search-icon { margin-left: 0.75rem; color: var(--md-on-surface-variant); }
-        .search-input { flex: 1; border: none; outline: none; background: transparent; font-size: 1rem; }
+        #map { height: 100%; width: 100%; }
 
-        .map-container { height: calc(100vh - 200px); position: relative; }
-        #map { height: 100%; width: 100%; background-color: #e5e5e5; }
-        
-        .floating-btn {
-            position: absolute; width: 56px; height: 56px; 
-            border-radius: var(--md-radius-l); border: none; cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; 
-            z-index: 1000; box-shadow: var(--md-shadow-2);
-            background: var(--md-surface); color: var(--md-on-surface-variant);
+        .search-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: var(--md-surface);
+            border-radius: var(--md-radius-xl);
+            box-shadow: var(--md-shadow-2);
+            padding: 0.5rem;
         }
+        .search-box { display: flex; align-items: center; }
+        .search-icon { margin: 0 0.75rem; color: var(--md-on-surface-variant); }
+        .search-input { flex: 1; border: none; outline: none; background: transparent; font-size: 1rem; padding: 0.5rem 0; }
+        .list-btn { background: transparent; border: none; cursor: pointer; padding: 0.5rem; display: flex; align-items: center; }
+        
+        .names-dropdown {
+            max-height: 300px;
+            overflow-y: auto;
+            border-top: 1px solid var(--md-surface-variant);
+            margin-top: 0.5rem;
+        }
+        .names-dropdown ul { list-style: none; padding: 0; margin: 0; }
+        .names-dropdown li { padding: 0.75rem 1.25rem; cursor: pointer; }
+        .names-dropdown li:hover { background-color: var(--md-surface-variant); }
+
+        .floating-btn { position: absolute; width: 56px; height: 56px; border-radius: var(--md-radius-l); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: var(--md-shadow-2); background: var(--md-surface); color: var(--md-on-surface-variant); }
         .reset-view-fab { bottom: 20px; left: 20px; }
         .refresh-fab { bottom: 90px; left: 20px; }
         .refresh-fab.loading .material-symbols-outlined { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .leaflet-popup-content-wrapper, .leaflet-popup-tip { 
-            background: var(--md-surface);
-            box-shadow: var(--md-shadow-2);
-            border-radius: var(--md-radius-l) !important;
-        }
-        .leaflet-popup-close-button {
-            font-size: 24px !important; width: 40px !important; height: 40px !important; 
-            top: 8px !important; right: 8px !important;
-            color: var(--md-on-surface-variant) !important;
-            border-radius: 50%; background-color: transparent !important;
-        }
-        
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--md-surface); box-shadow: var(--md-shadow-2); border-radius: var(--md-radius-l) !important; }
+        .leaflet-popup-close-button { font-size: 24px !important; width: 40px !important; height: 40px !important; top: 8px !important; right: 8px !important; color: var(--md-on-surface-variant) !important; border-radius: 50%; background-color: transparent !important; transition: background-color 0.2s; }
+        .leaflet-popup-close-button:hover { background-color: rgba(0,0,0,0.05) !important; }
         .popup-box { padding: 1.25rem; text-align: right; }
-        .popup-header {
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--md-surface-variant);
-            margin-bottom: 1rem;
-            text-align: center;
-        }
+        .popup-header { padding-bottom: 1rem; border-bottom: 1px solid var(--md-surface-variant); margin-bottom: 1rem; text-align: center; }
         .popup-name { font-weight: 700; font-size: 1.4rem; color: var(--md-on-surface); }
         .popup-city { font-size: 1rem; color: var(--md-on-surface-variant); display: flex; align-items: center; justify-content: center; gap: 6px; }
         .popup-btns { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
-        .popup-btn { 
-            padding: 0.75rem; border-radius: var(--md-radius-m); 
-            text-decoration: none; display: flex; align-items: center; 
-            justify-content: center; gap: 0.75rem; border: none; 
-            font-family: 'Heebo', sans-serif; font-size: 1rem; font-weight: 500; 
-            cursor: pointer;
-        }
+        .popup-btn { padding: 0.75rem; border-radius: var(--md-radius-m); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.75rem; border: none; font-family: 'Heebo', sans-serif; font-size: 1rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; }
         .popup-btn .material-symbols-outlined { font-size: 1.2rem; }
         .popup-btn.email, .popup-btn.phone { background: var(--md-primary-container); color: var(--md-on-primary-container) !important; }
         .popup-btn.whatsapp, .popup-btn.carpool { background: var(--md-secondary-container); color: var(--md-on-secondary-container) !important; }
@@ -129,14 +107,18 @@
             <div class="title">מאיה - משלחת לאוגנדה</div>
             <div class="subtitle">מחברים בין חברים</div>
         </header>
-        <div class="search-container">
-            <div class="search-box">
-                <span class="material-symbols-outlined search-icon">search</span>
-                <input type="text" class="search-input" placeholder="חיפוש משתתפים..." id="search-input">
-            </div>
-        </div>
-        <div class="map-container">
+        <div class="map-wrapper">
             <div id="map"></div>
+            <div class="search-overlay">
+                <div class="search-box">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input type="text" class="search-input" placeholder="חיפוש משתתפים..." id="search-input">
+                    <button id="list-toggle-btn" class="list-btn" title="הצג רשימה"><span class="material-symbols-outlined">list</span></button>
+                </div>
+                <div class="names-dropdown" hidden>
+                    <ul id="names-list"></ul>
+                </div>
+            </div>
             <button id="reset-view-fab" class="floating-btn reset-view-fab" title="מרכז מפה"><span class="material-symbols-outlined">explore</span></button>
             <button id="refresh-data-btn" class="floating-btn refresh-fab" title="רענן נתונים"><span class="material-symbols-outlined">refresh</span></button>
         </div>
@@ -163,7 +145,7 @@
         const markers = L.markerClusterGroup();
         map.addLayer(markers);
         
-        const modernMarkerIcon = L.divIcon({ className: 'modern-marker', html: `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="white" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));"/><circle cx="16" cy="16" r="12" fill="#6366f1"/></svg>`, iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32] });
+        const modernMarkerIcon = L.divIcon({ className: 'modern-marker', html: `<div style="width:36px;height:36px;background:linear-gradient(135deg, #6366f1, #8b5cf6);border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 6px 16px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;position:relative;"><div style="width:16px;height:16px;background:white;border-radius:50%;transform:rotate(45deg);"></div></div>`, iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36] });
 
         async function loadData() {
             const refreshBtn = document.getElementById('refresh-data-btn');
@@ -179,6 +161,7 @@
                 })).filter(p => p.lat && p.lon);
                 
                 renderMarkers(allParticipants);
+                populateNamesList(allParticipants);
             } catch (error) {
                 console.error("Error fetching data:", error);
                 alert('שגיאה בטעינת הנתונים');
@@ -186,10 +169,24 @@
                 refreshBtn.classList.remove('loading');
             }
         }
+        
+        function populateNamesList(participantsList) {
+            const listUl = document.getElementById('names-list');
+            listUl.innerHTML = '';
+            participantsList
+                .sort((a, b) => a.name.localeCompare(b.name, 'he'))
+                .forEach(p => {
+                    const li = document.createElement('li');
+                    li.textContent = p.name;
+                    li.dataset.lat = p.lat;
+                    li.dataset.lon = p.lon;
+                    listUl.appendChild(li);
+                });
+        }
 
         function renderMarkers(participantsToRender) {
             markers.clearLayers();
-            
+
             function getDistance(lat1, lon1, lat2, lon2) {
                 if (typeof lat1 !== 'number' || typeof lon1 !== 'number' || typeof lat2 !== 'number' || typeof lon2 !== 'number') return Infinity;
                 const R = 6371;
@@ -220,7 +217,7 @@
                 }
                 
                 let emailButton = '';
-                if (p.email && typeof p.email === 'string' && p.email.includes('@')) {
+                if (p.email && p.email.includes('@')) {
                     emailButton = `<a href="mailto:${p.email}" class="popup-btn email" target="_blank"><span class="material-symbols-outlined">email</span>שלח מייל</a>`;
                 }
 
@@ -248,6 +245,10 @@
             loadData();
             
             const searchInput = document.getElementById('search-input');
+            const listToggleBtn = document.getElementById('list-toggle-btn');
+            const namesDropdown = document.querySelector('.names-dropdown');
+            const namesList = document.getElementById('names-list');
+
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase();
                 if (!query) {
@@ -260,6 +261,19 @@
 
             searchInput.addEventListener('search', () => searchInput.blur());
             searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { searchInput.blur(); } });
+
+            listToggleBtn.addEventListener('click', () => {
+                namesDropdown.hidden = !namesDropdown.hidden;
+            });
+
+            namesList.addEventListener('click', (e) => {
+                if (e.target.tagName === 'LI') {
+                    const lat = parseFloat(e.target.dataset.lat);
+                    const lon = parseFloat(e.target.dataset.lon);
+                    map.setView([lat, lon], 14);
+                    namesDropdown.hidden = true;
+                }
+            });
 
             document.getElementById('reset-view-fab').onclick = () => map.setView([31.5, 34.75], 8);
             document.getElementById('refresh-data-btn').onclick = loadData;
